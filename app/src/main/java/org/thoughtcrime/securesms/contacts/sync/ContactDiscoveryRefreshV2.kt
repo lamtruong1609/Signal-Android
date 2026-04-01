@@ -150,7 +150,11 @@ object ContactDiscoveryRefreshV2 {
 
     val aci = SignalStore.account.aci ?: return null
     val password = SignalStore.account.servicePassword ?: return null
-    val credentials = okhttp3.Credentials.basic("${aci}:${SignalStore.account.deviceId}", password)
+    var identifier = aci.toString()
+    if (SignalStore.account.deviceId != org.whispersystems.signalservice.api.push.SignalServiceAddress.DEFAULT_DEVICE_ID) {
+      identifier += "." + SignalStore.account.deviceId
+    }
+    val credentials = "Basic " + org.signal.core.util.Base64.encodeWithPadding((identifier + ":" + password).toByteArray())
 
     val trustStore = org.thoughtcrime.securesms.push.SelfhostedTrustStore(AppDependencies.application)
     val trustManagers = org.whispersystems.signalservice.internal.util.BlacklistingTrustManager.createFor(trustStore)
