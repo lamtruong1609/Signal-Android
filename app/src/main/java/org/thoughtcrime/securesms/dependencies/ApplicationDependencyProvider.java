@@ -123,6 +123,7 @@ import org.whispersystems.signalservice.internal.configuration.SignalServiceConf
 import org.whispersystems.signalservice.internal.push.PushServiceSocket;
 import org.whispersystems.signalservice.internal.websocket.LibSignalChatConnection;
 import org.whispersystems.signalservice.internal.websocket.LibSignalNetworkExtensions;
+import org.whispersystems.signalservice.internal.websocket.OkHttpWebSocketConnection;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -352,6 +353,15 @@ public class ApplicationDependencyProvider implements AppDependencies.Provider {
         throw new WebSocketUnavailableException("Invalid auth credentials");
       }
 
+      if (BuildConfig.BUILD_ENVIRONMENT_TYPE.equals("Selfhosted")) {
+        return new OkHttpWebSocketConnection("okhttp-auth",
+                                             signalServiceConfigurationSupplier.get(),
+                                             Optional.of(credentialsProvider),
+                                             StandardUserAgentInterceptor.USER_AGENT,
+                                             healthMonitor,
+                                             Stories.isFeatureEnabled());
+      }
+
       Network network = libSignalNetworkSupplier.get();
       return new LibSignalChatConnection("libsignal-auth",
                                          network,
@@ -379,6 +389,15 @@ public class ApplicationDependencyProvider implements AppDependencies.Provider {
     SignalWebSocketHealthMonitor healthMonitor = new SignalWebSocketHealthMonitor(sleepTimer);
 
     WebSocketFactory unauthFactory = () -> {
+      if (BuildConfig.BUILD_ENVIRONMENT_TYPE.equals("Selfhosted")) {
+        return new OkHttpWebSocketConnection("okhttp-unauth",
+                                             signalServiceConfigurationSupplier.get(),
+                                             Optional.empty(),
+                                             StandardUserAgentInterceptor.USER_AGENT,
+                                             healthMonitor,
+                                             Stories.isFeatureEnabled());
+      }
+
       Network network = libSignalNetworkSupplier.get();
       return new LibSignalChatConnection("libsignal-unauth",
                                          network,

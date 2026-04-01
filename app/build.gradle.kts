@@ -78,7 +78,8 @@ val selectableVariants = listOf(
   "websiteProdSpinner",
   "websiteProdRelease",
   "githubProdSpinner",
-  "githubProdRelease"
+  "githubProdRelease",
+  "playSelfhostedDebug"
 )
 
 wire {
@@ -468,6 +469,40 @@ android {
       buildConfigField("String", "BUILD_ENVIRONMENT_TYPE", "\"Staging\"")
       buildConfigField("String", "STRIPE_PUBLISHABLE_KEY", "\"pk_test_sngOd8FnXNkpce9nPXawKrJD00kIDngZkD\"")
     }
+
+    create("selfhosted") {
+      dimension = "environment"
+
+      applicationIdSuffix = ".selfhosted"
+
+      buildConfigField("String", "SIGNAL_URL", "\"https://signal.datasafe.vn:8443\"")
+      buildConfigField("String", "STORAGE_URL", "\"https://signal.datasafe.vn:8443\"")
+      buildConfigField("String", "SIGNAL_CDN_URL", "\"https://signal.datasafe.vn:8443\"")
+      buildConfigField("String", "SIGNAL_CDN2_URL", "\"https://signal.datasafe.vn:8443\"")
+      buildConfigField("String", "SIGNAL_CDN3_URL", "\"https://signal.datasafe.vn:8443\"")
+      buildConfigField("String", "SIGNAL_CDSI_URL", "\"https://signal.datasafe.vn:8443\"")
+      buildConfigField("String", "SIGNAL_SVR2_URL", "\"https://signal.datasafe.vn:8443\"")
+      buildConfigField("String", "SIGNAL_SFU_URL", "\"https://signal.datasafe.vn:8443\"")
+      buildConfigField("String", "CONTENT_PROXY_HOST", "\"signal.datasafe.vn\"")
+      buildConfigField("int", "CONTENT_PROXY_PORT", "8443")
+      buildConfigField("String[]", "SIGNAL_SERVICE_IPS", "new String[]{}")
+      buildConfigField("String[]", "SIGNAL_STORAGE_IPS", "new String[]{}")
+      buildConfigField("String[]", "SIGNAL_CDN_IPS", "new String[]{}")
+      buildConfigField("String[]", "SIGNAL_CDN2_IPS", "new String[]{}")
+      buildConfigField("String[]", "SIGNAL_CDN3_IPS", "new String[]{}")
+      buildConfigField("String[]", "SIGNAL_SFU_IPS", "new String[]{}")
+      buildConfigField("String[]", "SIGNAL_CONTENT_PROXY_IPS", "new String[]{}")
+      buildConfigField("String[]", "SIGNAL_CDSI_IPS", "new String[]{}")
+      buildConfigField("String[]", "SIGNAL_SVR2_IPS", "new String[]{}")
+      buildConfigField("String", "MOBILE_COIN_ENVIRONMENT", "\"testnet\"")
+      buildConfigField("String", "SIGNAL_CAPTCHA_URL", "\"https://signalcaptchas.org/registration/generate.html\"")
+      buildConfigField("String", "RECAPTCHA_PROOF_URL", "\"https://signalcaptchas.org/challenge/generate.html\"")
+      buildConfigField("org.signal.libsignal.net.Network.Environment", "LIBSIGNAL_NET_ENV", "org.signal.libsignal.net.Network.Environment.PRODUCTION")
+      buildConfigField("int", "LIBSIGNAL_LOG_LEVEL", "org.signal.libsignal.protocol.logging.SignalProtocolLogger.DEBUG")
+
+      buildConfigField("String", "BUILD_ENVIRONMENT_TYPE", "\"Selfhosted\"")
+      buildConfigField("String", "STRIPE_PUBLISHABLE_KEY", "\"\"")
+    }
   }
 
   lint {
@@ -492,7 +527,7 @@ android {
 
       // Starting with minSdk 23, Android leaves native libraries uncompressed, which is fine for the Play Store, but not for our self-distributed APKs.
       // This reverts it to the legacy behavior, compressing the native libraries, and drastically reducing the APK file size.
-      if (variant.name.contains("website", ignoreCase = true) || variant.name.contains("github", ignoreCase = true)) {
+      if (variant.name.contains("website", ignoreCase = true) || variant.name.contains("github", ignoreCase = true) || variant.name.contains("selfhosted", ignoreCase = true)) {
         variant.packaging.jniLibs.useLegacyPackaging.set(true)
       }
 

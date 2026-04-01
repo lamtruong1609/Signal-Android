@@ -168,7 +168,8 @@ class SignalServiceNetworkAccess(context: Context) {
     }
   }
 
-  private val serviceTrustStore: TrustStore = SignalServiceTrustStore(context)
+  private val isSelfhosted: Boolean = BuildConfig.BUILD_ENVIRONMENT_TYPE == "Selfhosted"
+  private val serviceTrustStore: TrustStore = if (isSelfhosted) SelfhostedTrustStore(context) else SignalServiceTrustStore(context)
   private val gTrustStore: TrustStore = DomainFrontingTrustStore(context)
   private val fTrustStore: TrustStore = DomainFrontingDigicertTrustStore(context)
 
@@ -293,7 +294,7 @@ class SignalServiceNetworkAccess(context: Context) {
   }
 
   fun getConfiguration(e164: String?): SignalServiceConfiguration {
-    if (e164 == null || SignalStore.proxy.isProxyEnabled) {
+    if (isSelfhosted || e164 == null || SignalStore.proxy.isProxyEnabled) {
       return uncensoredConfiguration
     }
 
