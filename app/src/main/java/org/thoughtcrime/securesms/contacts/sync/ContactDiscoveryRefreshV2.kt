@@ -148,11 +148,9 @@ object ContactDiscoveryRefreshV2 {
     val baseUrl = org.thoughtcrime.securesms.BuildConfig.SIGNAL_URL
     val url = "$baseUrl/v1/selfhosted/lookup/$encodedE164"
 
-    val credentials = SignalStore.account.serviceIds?.let {
-      val username = "${it.aci}:${SignalStore.account.deviceId}"
-      val password = SignalStore.account.servicePassword ?: return null
-      okhttp3.Credentials.basic(username, password)
-    } ?: return null
+    val aci = SignalStore.account.aci ?: return null
+    val password = SignalStore.account.servicePassword ?: return null
+    val credentials = okhttp3.Credentials.basic("${aci}:${SignalStore.account.deviceId}", password)
 
     val trustStore = org.thoughtcrime.securesms.push.SelfhostedTrustStore(AppDependencies.application)
     val trustManagers = org.whispersystems.signalservice.internal.util.BlacklistingTrustManager.createFor(trustStore)
