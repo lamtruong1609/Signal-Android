@@ -91,6 +91,10 @@ object ContactDiscoveryRefreshV2 {
   @WorkerThread
   @Synchronized
   fun lookupE164(e164: String): ContactDiscovery.LookupResult? {
+    if (org.thoughtcrime.securesms.BuildConfig.BUILD_ENVIRONMENT_TYPE == "Selfhosted") {
+      return lookupE164Selfhosted(e164)
+    }
+
     val result = SignalNetwork.cdsApi.getRegisteredUsers(
       previousE164s = emptySet(),
       newE164s = setOf(e164),
@@ -133,6 +137,56 @@ object ContactDiscoveryRefreshV2 {
         pni = item.pni,
         aci = item.aci?.orElse(null)
       )
+    }
+  }
+
+  @Throws(IOException::class)
+  @WorkerThread
+  private fun lookupE164Selfhosted(e164: String): ContactDiscovery.LookupResult? {
+    Log.i(TAG, "[Selfhosted] Looking up $e164 via direct server API")
+    val encodedE164 = java.net.URLEncoder.encode(e164, "UTF-8")
+    val baseUrl = org.thoughtcrime.securesms.BuildConfig.SIGNAL_URL
+    val url = "$baseUrl/v1/selfhosted/lookup/$encodedE164"
+
+    val credentials = SignalStore.account.serviceIds?.let {
+      val username = "${it.aci}:${SignalStore.account.deviceId}"
+      val password = SignalStore.account.servicePassword ?: return null
+      okhttp3.Credentials.basic(username, password)
+    } ?: return null
+
+    val trustStore = org.thoughtcrime.securesms.push.SelfhostedTrustStore(AppDependencies.application)
+    val trustManagers = org.whispersystems.signalservice.internal.util.BlacklistingTrustManager.createFor(trustStore)
+    val sslContext = javax.net.ssl.SSLContext.getInstance("TLS")
+    sslContext.init(null, trustManagers, null)
+
+    val client = okhttp3.OkHttpClient.Builder()
+      .sslSocketFactory(sslContext.socketFactory, trustManagers[0] as javax.net.ssl.X509TrustManager)
+      .build()
+
+    val request = okhttp3.Request.Builder()
+      .url(url)
+      .get()
+      .header("Authorization", credentials)
+      .build()
+
+    try {
+      val response = client.newCall(request).execute()
+      if (!response.isSuccessful) {
+        Log.w(TAG, "[Selfhosted] Lookup returned ${response.code}")
+        return null
+      }
+      val body = response.body?.string() ?: return null
+      val json = org.json.JSONObject(body)
+      val aciString = json.optString("aci", null)
+      val pniString = json.getString("pni")
+      val aci = if (aciString != null) org.signal.core.models.ServiceId.ACI.from(java.util.UUID.fromString(aciString)) else null
+      val pni = org.signal.core.models.ServiceId.PNI.from(java.util.UUID.fromString(pniString))
+      val id = SignalDatabase.recipients.processIndividualCdsLookup(e164 = e164, aci = aci, pni = pni)
+      Log.i(TAG, "[Selfhosted] Found $e164: aci=$aci, pni=$pni")
+      return ContactDiscovery.LookupResult(recipientId = id, pni = pni, aci = aci)
+    } catch (e: Exception) {
+      Log.w(TAG, "[Selfhosted] Lookup failed for $e164", e)
+      return null
     }
   }
 
