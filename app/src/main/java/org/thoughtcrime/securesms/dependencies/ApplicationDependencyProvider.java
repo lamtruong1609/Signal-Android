@@ -353,15 +353,7 @@ public class ApplicationDependencyProvider implements AppDependencies.Provider {
         throw new WebSocketUnavailableException("Invalid auth credentials");
       }
 
-      if (BuildConfig.BUILD_ENVIRONMENT_TYPE.equals("Selfhosted")) {
-        return new OkHttpWebSocketConnection("okhttp-auth",
-                                             signalServiceConfigurationSupplier.get(),
-                                             Optional.of(credentialsProvider),
-                                             StandardUserAgentInterceptor.USER_AGENT,
-                                             healthMonitor,
-                                             Stories.isFeatureEnabled());
-      }
-
+      // SELFHOSTED: Use LibSignalChatConnection (env.rs points to our server)
       Network network = libSignalNetworkSupplier.get();
       return new LibSignalChatConnection("libsignal-auth",
                                          network,
@@ -389,15 +381,7 @@ public class ApplicationDependencyProvider implements AppDependencies.Provider {
     SignalWebSocketHealthMonitor healthMonitor = new SignalWebSocketHealthMonitor(sleepTimer);
 
     WebSocketFactory unauthFactory = () -> {
-      if (BuildConfig.BUILD_ENVIRONMENT_TYPE.equals("Selfhosted")) {
-        return new OkHttpWebSocketConnection("okhttp-unauth",
-                                             signalServiceConfigurationSupplier.get(),
-                                             Optional.empty(),
-                                             StandardUserAgentInterceptor.USER_AGENT,
-                                             healthMonitor,
-                                             Stories.isFeatureEnabled());
-      }
-
+      // SELFHOSTED: Use LibSignalChatConnection (env.rs points to our server)
       Network network = libSignalNetworkSupplier.get();
       return new LibSignalChatConnection("libsignal-unauth",
                                          network,
