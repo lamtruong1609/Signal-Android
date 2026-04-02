@@ -495,6 +495,7 @@ android {
       buildConfigField("String[]", "SIGNAL_CDSI_IPS", "new String[]{}")
       buildConfigField("String[]", "SIGNAL_SVR2_IPS", "new String[]{}")
       buildConfigField("String", "MOBILE_COIN_ENVIRONMENT", "\"testnet\"")
+      buildConfigField("String[]", "UNIDENTIFIED_SENDER_TRUST_ROOTS", "new String[]{\"BS/lfaNHzWJDFSjarF+7KQcw//aEr8TPwu2QmV9Yyzt0\"}")
       buildConfigField("String", "SIGNAL_CAPTCHA_URL", "\"https://signalcaptchas.org/registration/generate.html\"")
       buildConfigField("String", "RECAPTCHA_PROOF_URL", "\"https://signalcaptchas.org/challenge/generate.html\"")
       buildConfigField("org.signal.libsignal.net.Network.Environment", "LIBSIGNAL_NET_ENV", "org.signal.libsignal.net.Network.Environment.PRODUCTION")
