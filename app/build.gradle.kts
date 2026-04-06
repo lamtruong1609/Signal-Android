@@ -482,6 +482,9 @@ android {
       buildConfigField("String", "SIGNAL_CDN3_URL", "\"https://signal.datasafe.vn:8443\"")
       buildConfigField("String", "SIGNAL_CDSI_URL", "\"https://signal.datasafe.vn:8443\"")
       buildConfigField("String", "SIGNAL_SVR2_URL", "\"https://signal.datasafe.vn:8443\"")
+      // SELFHOSTED: SVR2 MRENCLAVE — matches enclave release Standard_DC24s_v3 (production enclave in simulation mode)
+      buildConfigField("String", "SVR2_MRENCLAVE", "\"1240acbd4aa26974184844c8a46b1022d3957ac8a76c1fd8f5b1a15141ee0708\"")
+      buildConfigField("String", "SVR2_MRENCLAVE_LEGACY", "\"1240acbd4aa26974184844c8a46b1022d3957ac8a76c1fd8f5b1a15141ee0708\"")
       buildConfigField("String", "SIGNAL_SFU_URL", "\"https://signal.datasafe.vn:8443\"")
       buildConfigField("String", "CONTENT_PROXY_HOST", "\"signal.datasafe.vn\"")
       buildConfigField("int", "CONTENT_PROXY_PORT", "8443")
@@ -495,11 +498,18 @@ android {
       buildConfigField("String[]", "SIGNAL_CDSI_IPS", "new String[]{}")
       buildConfigField("String[]", "SIGNAL_SVR2_IPS", "new String[]{}")
       buildConfigField("String", "MOBILE_COIN_ENVIRONMENT", "\"testnet\"")
-      buildConfigField("String[]", "UNIDENTIFIED_SENDER_TRUST_ROOTS", "new String[]{\"BT5I50sB961UA5SfAIBQ0mctqivMm+tKfF1+OyQsqXZX\"}")
+      // SELFHOSTED: trust root must match server's unidentifiedDelivery public key
+      // Original staging key: BT5I50sB961UA5SfAIBQ0mctqivMm+tKfF1+OyQsqXZX
+      buildConfigField("String[]", "UNIDENTIFIED_SENDER_TRUST_ROOTS", "new String[]{\"BS/lfaNHzWJDFSjarF+7KQcw//aEr8TPwu2QmV9Yyzt0\"}")
       buildConfigField("String", "SIGNAL_CAPTCHA_URL", "\"https://signalcaptchas.org/registration/generate.html\"")
       buildConfigField("String", "RECAPTCHA_PROOF_URL", "\"https://signalcaptchas.org/challenge/generate.html\"")
       buildConfigField("org.signal.libsignal.net.Network.Environment", "LIBSIGNAL_NET_ENV", "org.signal.libsignal.net.Network.Environment.PRODUCTION")
       buildConfigField("int", "LIBSIGNAL_LOG_LEVEL", "org.signal.libsignal.protocol.logging.SignalProtocolLogger.DEBUG")
+
+      // SELFHOSTED: ZK server public params — generated from our ServerSecretParams via zkparams command
+      buildConfigField("String", "ZKGROUP_SERVER_PUBLIC_PARAMS", "\"AJwRb7Jhb0NjKYNdS/mekKLw3mEPaGGX1Y2xtAEqj65oMkw7SH81SQAThWmB6LSa6aOD+pm7UNxvLt1+naYbzitUQgD7ckXJtJPdNxbM5oEIGDvdUZHiVGooZvj3CN7fBUiS9aoWRaIPww5OkPVPYQPi/rs4Kydh65CbgMzKWWthyKgCZ12STR9jfSmacd2l/cpQkGtu6iJg/6N/EYB/tSqi/72patd1VOfLAZ/QN7Q1DHP8p66jytUTbgvwbPT3B3KPcVvp09/MsHlTF6NUgTOdNUYa/ronwqfY1C7qzR0U0MbehpuZFO5uiMkkUlK1NtPSvrU4rE7QzTon6hODRx3sQhZzBFfF3SJ225D0Fa7G3uvDaGC+Z5GYZbaXI2CYH/QB5TkWr3bMawTime712E7JK7jGJnuJYsYRqUbgZtYU6gZmi8FWUcVVB5R8CPrbBEm3pxruDnf111LD4a27tz8EmHNKNdILERMJbYFcfGZxK+AcDYXWq7Ng3v1SSYrjHgBXIMv1h5/yzdZM/i/S2uFaib0U2hAzAxRrZWyWzHNbmivIsJDevvLi4HrnWDCJx7keTkILLL/jZxA9ei49fx3yXjhJipByAWgMEPBfW0O6fGGphskLSoXe5XDCs2mqPqg/At4HcZquakH1MagHjZtzLMvBk1Aa+lnj4NEMLzAilkm55JT5QGTd/nOUciWOC7kfopNquDkGYEmcoQrLrGGWlJMPU8x509CFSH7Hqy/zd6t/RSmcfTjMdEpouTH/JZTnCI3w3OWn3jTEF6WMt/JyWXbDMkf/6ZTPVdMLA+5esu9QmaFrXjf9ERiIkuMM9ytt0bI3LOm4B8blyJAr/mbO7Hx5+9mMvgW7R3V+5xUaSceQuZGmVqWWBStf9UJQJQ\"")
+      buildConfigField("String", "GENERIC_SERVER_PUBLIC_PARAMS", "\"AJwRb7Jhb0NjKYNdS/mekKLw3mEPaGGX1Y2xtAEqj65oMkw7SH81SQAThWmB6LSa6aOD+pm7UNxvLt1+naYbzitUQgD7ckXJtJPdNxbM5oEIGDvdUZHiVGooZvj3CN7fBUiS9aoWRaIPww5OkPVPYQPi/rs4Kydh65CbgMzKWWthyKgCZ12STR9jfSmacd2l/cpQkGtu6iJg/6N/EYB/tSqi/72patd1VOfLAZ/QN7Q1DHP8p66jytUTbgvwbPT3B3KPcVvp09/MsHlTF6NUgTOdNUYa/ronwqfY1C7qzR0U0MbehpuZFO5uiMkkUlK1NtPSvrU4rE7QzTon6hODRx3sQhZzBFfF3SJ225D0Fa7G3uvDaGC+Z5GYZbaXI2CYH/QB5TkWr3bMawTime712E7JK7jGJnuJYsYRqUbgZtYU6gZmi8FWUcVVB5R8CPrbBEm3pxruDnf111LD4a27tz8EmHNKNdILERMJbYFcfGZxK+AcDYXWq7Ng3v1SSYrjHgBXIMv1h5/yzdZM/i/S2uFaib0U2hAzAxRrZWyWzHNbmivIsJDevvLi4HrnWDCJx7keTkILLL/jZxA9ei49fx3yXjhJipByAWgMEPBfW0O6fGGphskLSoXe5XDCs2mqPqg/At4HcZquakH1MagHjZtzLMvBk1Aa+lnj4NEMLzAilkm55JT5QGTd/nOUciWOC7kfopNquDkGYEmcoQrLrGGWlJMPU8x509CFSH7Hqy/zd6t/RSmcfTjMdEpouTH/JZTnCI3w3OWn3jTEF6WMt/JyWXbDMkf/6ZTPVdMLA+5esu9QmaFrXjf9ERiIkuMM9ytt0bI3LOm4B8blyJAr/mbO7Hx5+9mMvgW7R3V+5xUaSceQuZGmVqWWBStf9UJQJQ\"")
+      buildConfigField("String", "BACKUP_SERVER_PUBLIC_PARAMS", "\"AJwRb7Jhb0NjKYNdS/mekKLw3mEPaGGX1Y2xtAEqj65oMkw7SH81SQAThWmB6LSa6aOD+pm7UNxvLt1+naYbzitUQgD7ckXJtJPdNxbM5oEIGDvdUZHiVGooZvj3CN7fBUiS9aoWRaIPww5OkPVPYQPi/rs4Kydh65CbgMzKWWthyKgCZ12STR9jfSmacd2l/cpQkGtu6iJg/6N/EYB/tSqi/72patd1VOfLAZ/QN7Q1DHP8p66jytUTbgvwbPT3B3KPcVvp09/MsHlTF6NUgTOdNUYa/ronwqfY1C7qzR0U0MbehpuZFO5uiMkkUlK1NtPSvrU4rE7QzTon6hODRx3sQhZzBFfF3SJ225D0Fa7G3uvDaGC+Z5GYZbaXI2CYH/QB5TkWr3bMawTime712E7JK7jGJnuJYsYRqUbgZtYU6gZmi8FWUcVVB5R8CPrbBEm3pxruDnf111LD4a27tz8EmHNKNdILERMJbYFcfGZxK+AcDYXWq7Ng3v1SSYrjHgBXIMv1h5/yzdZM/i/S2uFaib0U2hAzAxRrZWyWzHNbmivIsJDevvLi4HrnWDCJx7keTkILLL/jZxA9ei49fx3yXjhJipByAWgMEPBfW0O6fGGphskLSoXe5XDCs2mqPqg/At4HcZquakH1MagHjZtzLMvBk1Aa+lnj4NEMLzAilkm55JT5QGTd/nOUciWOC7kfopNquDkGYEmcoQrLrGGWlJMPU8x509CFSH7Hqy/zd6t/RSmcfTjMdEpouTH/JZTnCI3w3OWn3jTEF6WMt/JyWXbDMkf/6ZTPVdMLA+5esu9QmaFrXjf9ERiIkuMM9ytt0bI3LOm4B8blyJAr/mbO7Hx5+9mMvgW7R3V+5xUaSceQuZGmVqWWBStf9UJQJQ\"")
 
       buildConfigField("String", "BUILD_ENVIRONMENT_TYPE", "\"Selfhosted\"")
       buildConfigField("String", "STRIPE_PUBLISHABLE_KEY", "\"\"")
